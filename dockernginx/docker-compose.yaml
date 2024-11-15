@@ -1,0 +1,28 @@
+version: "3"
+
+services:
+#Nginx used as reverse proxy and call the php site
+  nginx:
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
+    ports: 
+      - "8081:80"
+    networks:
+      - internal
+    volumes:
+      - ./site/:/var/www/html/
+      - ./logs/nginx:/var/log/nginx/ #where the log files stored 
+  
+  php:
+    image: php:fpm-alpine
+    networks:
+      - internal
+    volumes:
+      - ./site/:/var/www/html/
+      - ./logs/php.log:/var/log/fpm-php.www.log
+
+#The connection between nginx and php maintain throug internal network to avoid vulnerabilities
+networks:
+  internal:
+    driver: bridge
