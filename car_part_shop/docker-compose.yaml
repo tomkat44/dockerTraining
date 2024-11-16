@@ -1,0 +1,93 @@
+version: '3.9'
+services:
+  php-apache-enviroment:
+    container_name: car_part_shop
+    image: php:8.0-apache
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+        #Στα volumes από κάτω η πρώτη είναι . διότι δείχνει στο σημείο που είμαι
+        #το δεύτερο το γράφω όπως έιναι για να αντλήσει σελίδα html
+    volumes:
+      - '.:/var/www/html/'
+    ports:
+      - 8000:80
+  
+  db:
+    #This version because with the latest we have problems
+      image: mysql:8.0.30
+    # NOTE: use of "mysql_native_password" is not recommended: https://dev.mysql.com/doc/refman/8.0/en/upgrading-from-previous-series.html#upgrade-caching-sha2-password
+    # (this is just an example, not intended to be a production configuration)
+      command: --default-authentication-plugin=mysql_native_password
+      restart: always
+      environment:
+        MYSQL_ROOT_PASSWORD: root
+      ports:
+        - "3306:3306"
+      volumes:
+        - db:/var/lib/mysql
+
+  
+
+  phpmyadmin:
+    image: phpmyadmin
+    restart: always
+    ports:
+      - 8080:80
+    environment:
+      - PMA_ARBITRARY=1  
+
+volumes:
+  db:
+
+    # db:
+    #   image: mysql:latest
+    #   container_name: pinkFlamingosContainer
+    #   ports:
+    #     - "3306:3306"
+    #   environment:
+    #     - MYSQL_ROOT_PASSWORD=root
+    #     - MYSQL_DATABASE=e_shop_php
+    #   restart: always
+    #   volumes:
+    #     - C:\htdocs\php135\car_part_shop\db:/var/lib/mysql   
+    
+    
+
+    #db:
+    #    container_name: mysqli_connect.php
+    #    image: mysql
+    #    cap_add:
+     #     - SYS_NICE
+     #   restart: always
+      #  environment:
+       #   - MYSQL_DATABASE=e_shop_php
+        #  - MYSQL_ROOT_PASSWORD=root
+        #ports:
+        #  - '3306:3306'
+        #volumes:
+        #  - db:/var/lib/mysql
+        #  - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+          #- ".:/var/lib/mysql"
+#volumes:
+    # db:
+    #   driver: local
+
+    
+   # phpmyadmin:
+    #    image: phpmyadmin/phpmyadmin
+     #   ports:
+      #      - '8080:80'
+      #  restart: always
+       # environment:
+      #  PMA_HOST: db
+      #  depends_on:
+      #      - db
+  
+  # docker run --name basic-mysql --rm -v /tmp/mysql-data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=e_shop_php -p 3306:3306 -it mysql:8.0
+
+  # docker run --name basic-mysql -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=e_shop_php -p 3306:3306 -it mysql
+          
+        
